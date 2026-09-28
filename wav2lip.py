@@ -8,32 +8,16 @@ import io
 import tempfile
 import torchaudio
 from pathlib import Path
+import folder_paths
 import subprocess
 import hashlib
 
 # Removed unused imports: pydub, soundfile, subprocess
 
-def find_folder(base_path, folder_name):
-    for root, dirs, files in os.walk(base_path):
-        if folder_name in dirs:
-            return Path(root) / folder_name
-    return None
-
-def check_model_in_folder(folder_path, model_file):
-    model_path = folder_path / model_file
-    return model_path.exists(), model_path
-
 base_dir = Path(__file__).resolve().parent
-
-print(f"Base directory: {base_dir}")
-
-checkpoints_path = find_folder(base_dir, "checkpoints")
-print(f"Checkpoints path: {checkpoints_path}")
-
 wav2lip_model_file = "wav2lip_gan.pth"
-model_exists, model_path = check_model_in_folder(checkpoints_path, wav2lip_model_file)
-print(f"Model path: {model_path}")
-assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
+model_path = folder_paths.get_full_path("checkpoints", wav2lip_model_file)
+assert model_path is not None, f"Model {wav2lip_model_file} not found in ComfyUI/models/checkpoints"
 
 current_dir = Path(__file__).resolve().parent
 wav2lip_path = current_dir / "wav2lip"
@@ -59,7 +43,6 @@ from .Wav2Lip.wav2lip_node import wav2lip_
 # Removed process_audio, get_ffmpeg_path, get_audio, validate_path, hash_path functions
 
 import hashlib
-import folder_paths  # Assuming folder_paths is a module you have for handling paths
 
 class LoadAudio:
     @classmethod
